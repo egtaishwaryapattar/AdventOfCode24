@@ -15,6 +15,8 @@ for line in lines:
 col1.sort()
 col2.sort()
 
+'''
+### part 1
 # find difference
 sum = 0
 count = len(col1)
@@ -25,4 +27,26 @@ while index < count:
     index = index + 1
 
 # result
+print(sum)
+'''
+
+# part 2
+sum = 0
+prevNum = 0;
+prevMultiplier = 0
+
+for num in col1:
+    if (num == prevNum):
+        sum += prevMultiplier
+    else:
+        # iterate through col2 and find num matches
+        count = 0
+        for num2 in col2:
+            if (num2 == num):
+                count += 1
+        
+        prevNum = num
+        prevMultiplier = num * count
+        sum += prevMultiplier
+
 print(sum)
