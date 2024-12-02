@@ -81,11 +81,21 @@ def are_levels_increasing(diff_line):
             return diff_line[2] > 0
 
 def part_2(matrix):
+    global part2_safe
+    part2_safe = 0
 
     # know that all the lines coming in are unsafe. Need to find out if the removal of one level will make the line safe
     # brute force
-    for line in lines:
-        num = 0
+    for list in matrix:
+        for number in list:
+            # remove the number from the list and test if it is valid
+            list_copy = list.copy()
+            list_copy.remove(number)
+            if (is_line_safe(list_copy)):
+                part2_safe += 1
+                break
+
+    print("Part 2 number safe = ", part2_safe)
 
 
 
@@ -180,4 +190,6 @@ with open('C:\SourceCode\AdventOfCode24\Day2\puzzle_input.txt', 'r') as f:
         matrix.append(num_list)
 
 unsafe_lines = part_1(matrix)
-#part_2(unsafe_lines)
+part_2(unsafe_lines)
+
+print("Total number of safe lines = ", part1_safe + part2_safe)
