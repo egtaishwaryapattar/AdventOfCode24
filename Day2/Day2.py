@@ -46,8 +46,7 @@ def part_1(lines):
     # print total
     print(num_safe)
 
-def part_2(lines):
-
+def create_diff_matrix(lines):
     # for each line, calculate the numerical diff and construct a matrix of diffs 
     diff_matrix = []
 
@@ -64,38 +63,63 @@ def part_2(lines):
         
         diff_matrix.append(diffs)
 
-    # go through each line and identify which are safe and if the unsafe ones can be made safe
+    return diff_matrix
+
+def part_2(lines):
+    diff_matrix = create_diff_matrix(lines)
     num_safe = 0
+    
+    # go through each line and identify which are safe and if the unsafe ones can be made safe
     for diff_line in diff_matrix:
+        #print(diff_line)
+
         num_invalid_levels = 0
-        invalid_diff_pos = 0
+        invalid_diff_pos = []
         index = 0
-        is_increasing = diff_line[0] > 0
+        is_safe = False
+
+        # determine if the list is increasing or decreasing
+        if ((diff_line[0] > 0) == (diff_line[1] > 0)):
+            is_increasing = diff_line[0] > 0
+        else:
+            if ((diff_line[0] > 0) == (diff_line[2] > 0)):
+                is_increasing = diff_line[0] > 0
+            else:
+                is_increasing = diff_line[2] > 0
 
         # check validity
         for diff in diff_line:
             valid = is_diff_valid(diff, is_increasing)
             if (valid == False):
                 num_invalid_levels += 1
-                invalid_diff_pos = index
+                invalid_diff_pos.append(index)
 
             index += 1
 
         # handle invalid cases
         if (num_invalid_levels == 0):
-            num_safe += 1
+            is_safe = True
 
         elif (num_invalid_levels == 1):
             # check if the removal of one level can make the line safe
 
-            if (invalid_diff_pos == 0 or invalid_diff_pos == len(diff_line) - 1):
+            if (invalid_diff_pos[0] == 0 or invalid_diff_pos[0] == len(diff_line) - 1):
                 # can just delete the first/last number and it'll be valid
-                num_safe += 1
+                is_safe = True
             else:
                 # remove the invalid diff and add to the next diff and check if it is valid
-                new_diff = diff_line[invalid_diff_pos] + diff_line[invalid_diff_pos + 1]
-                if(is_diff_valid(new_diff, diff_line[0] > 0)):
-                    num_safe += 1
+                pos = invalid_diff_pos[0]
+                new_diff = diff_line[pos] + diff_line[pos + 1]
+                if(is_diff_valid(new_diff, is_increasing)):
+                    is_safe = True
+
+        elif (num_invalid_levels == 2):
+            # check that the two invalid levels are consecutive
+            if (invalid_diff_pos[1] - invalid_diff_pos[0] == 1):
+                # if the sum of them is valid then it is fine
+                new_diff = diff_line[invalid_diff_pos[0]] + diff_line[invalid_diff_pos[1]]
+                if(is_diff_valid(new_diff, is_increasing)):
+                    is_safe = True
 
         elif (num_invalid_levels == len(diff_line) - 1):
             # check if the removing the first diff makes the rest of the diff line valid
@@ -109,9 +133,13 @@ def part_2(lines):
                    invalid_level_found = True
 
             if (invalid_level_found == False):
-                num_safe += 1
+                is_safe = True
 
         # else the line is not safe
+
+        print(is_safe)
+        if (is_safe):
+            num_safe += 1
 
     print(num_safe)
 
