@@ -1,6 +1,3 @@
-## global
-part1_unsafe = 0
-
 ##########################################
 ### functions
 def is_diff_valid(diff, is_increasing):
@@ -17,40 +14,43 @@ def is_diff_valid(diff, is_increasing):
         else:
             return True
 
+def is_line_safe(line):
+    count = len(line)
+    index = 0
+    is_increasing = False
 
-def part_1(lines):
+    while index < count - 1:
+        diff = (line[index + 1]) - (line[index])
+
+        if (index == 0):
+            if (diff > 0):
+                is_increasing = True
+
+        valid = is_diff_valid(diff, is_increasing)
+        if (valid == False):
+            return False
+            break
+
+        # increment index for while loop
+        index += 1
+    
+    return True
+
+def part_1(matrix):
+    global part1_safe
+    part1_safe = 0
     unsafe_lines = []
 
-    for line in lines:
-        numbers = line.split()
-        count = len(numbers)
-        index = 0
-        is_increasing = False
-        is_unsafe = False
-
-        while index < count - 1:
-            diff = (int)(numbers[index + 1]) - (int)(numbers[index])
-
-            if (index == 0):
-                if (diff > 0):
-                    is_increasing = True
-
-            valid = is_diff_valid(diff, is_increasing)
-            if (valid == False):
-                is_unsafe = True
-                break
-
-            # increment index for while loop
-            index += 1
-        
+    for line in matrix:
         # check if line is safe
-        if (is_unsafe == False):
-            part1_unsafe += 1
+        if (is_line_safe(line)):
+            part1_safe += 1
+        else:
             unsafe_lines.append(line)
 
-    print("Part 1 number safe = ", part1_unsafe)
+    print("Part 1 number safe = ", part1_safe)
     return unsafe_lines
-
+'''
 def create_diff_matrix(lines):
     # for each line, calculate the numerical diff and construct a matrix of diffs 
     diff_matrix = []
@@ -69,7 +69,7 @@ def create_diff_matrix(lines):
         diff_matrix.append(diffs)
 
     return diff_matrix
-
+'''
 def are_levels_increasing(diff_line):
     # determine if the list is increasing or decreasing
     if ((diff_line[0] > 0) == (diff_line[1] > 0)):
@@ -80,14 +80,16 @@ def are_levels_increasing(diff_line):
         else:
             return diff_line[2] > 0
 
-def part_2(lines):
+def part_2(matrix):
 
     # know that all the lines coming in are unsafe. Need to find out if the removal of one level will make the line safe
+    # brute force
+    for line in lines:
+        num = 0
 
 
 
-
-
+    '''
     diff_matrix = create_diff_matrix(lines)
     num_safe = 0
     line_number = 0
@@ -159,12 +161,23 @@ def part_2(lines):
         line_number += 1
 
     print(num_safe)
+    '''
 
 ##########################################
 ### scripts
 # open file
-with open('C:\SourceCode\AdventOfCode24\Day2\custom_tests2.txt', 'r') as f:
+with open('C:\SourceCode\AdventOfCode24\Day2\puzzle_input.txt', 'r') as f:
     lines = f.readlines()
 
-unsafe_lines = part_1(lines)
-part_2(unsafe_lines)
+    matrix = []
+    for line in lines:
+        numbers = line.split()
+        num_list = []
+
+        for number in numbers:
+            num_list.append((int)(number))
+        
+        matrix.append(num_list)
+
+unsafe_lines = part_1(matrix)
+#part_2(unsafe_lines)
