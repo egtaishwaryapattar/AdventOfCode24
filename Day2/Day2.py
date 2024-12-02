@@ -1,3 +1,6 @@
+## global
+part1_unsafe = 0
+
 ##########################################
 ### functions
 def is_diff_valid(diff, is_increasing):
@@ -14,8 +17,9 @@ def is_diff_valid(diff, is_increasing):
         else:
             return True
 
+
 def part_1(lines):
-    num_safe = 0
+    unsafe_lines = []
 
     for line in lines:
         numbers = line.split()
@@ -41,10 +45,11 @@ def part_1(lines):
         
         # check if line is safe
         if (is_unsafe == False):
-            num_safe += 1
+            part1_unsafe += 1
+            unsafe_lines.append(line)
 
-    # print total
-    print(num_safe)
+    print("Part 1 number safe = ", part1_unsafe)
+    return unsafe_lines
 
 def create_diff_matrix(lines):
     # for each line, calculate the numerical diff and construct a matrix of diffs 
@@ -65,38 +70,45 @@ def create_diff_matrix(lines):
 
     return diff_matrix
 
+def are_levels_increasing(diff_line):
+    # determine if the list is increasing or decreasing
+    if ((diff_line[0] > 0) == (diff_line[1] > 0)):
+        return diff_line[0] > 0
+    else:
+        if ((diff_line[0] > 0) == (diff_line[2] > 0)):
+            return diff_line[0] > 0
+        else:
+            return diff_line[2] > 0
+
 def part_2(lines):
+
+    # know that all the lines coming in are unsafe. Need to find out if the removal of one level will make the line safe
+
+
+
+
+
     diff_matrix = create_diff_matrix(lines)
     num_safe = 0
+    line_number = 0
     
     # go through each line and identify which are safe and if the unsafe ones can be made safe
     for diff_line in diff_matrix:
-        #print(diff_line)
+        is_increasing = are_levels_increasing(diff_line)
 
-        num_invalid_levels = 0
         invalid_diff_pos = []
         index = 0
         is_safe = False
 
-        # determine if the list is increasing or decreasing
-        if ((diff_line[0] > 0) == (diff_line[1] > 0)):
-            is_increasing = diff_line[0] > 0
-        else:
-            if ((diff_line[0] > 0) == (diff_line[2] > 0)):
-                is_increasing = diff_line[0] > 0
-            else:
-                is_increasing = diff_line[2] > 0
-
         # check validity
         for diff in diff_line:
-            valid = is_diff_valid(diff, is_increasing)
-            if (valid == False):
-                num_invalid_levels += 1
+            if (is_diff_valid(diff, is_increasing) == False):
                 invalid_diff_pos.append(index)
 
             index += 1
 
         # handle invalid cases
+        num_invalid_levels = len(invalid_diff_pos)
         if (num_invalid_levels == 0):
             is_safe = True
 
@@ -121,32 +133,38 @@ def part_2(lines):
                 if(is_diff_valid(new_diff, is_increasing)):
                     is_safe = True
 
-        elif (num_invalid_levels == len(diff_line) - 1):
+#        elif (num_invalid_levels == len(diff_line) - 1):
             # check if the removing the first diff makes the rest of the diff line valid
             # the reason all but one show invalid may be because the is_increasing should've been the inverse
-            invalid_level_found = False
-            diff_line = diff_line[1:] # slice the list to remove first element
+#            invalid_level_found = False
+#            diff_line = diff_line[1:] # slice the list to remove first element
             
-            for diff in diff_line:
-                valid = is_diff_valid(diff, is_increasing)
-                if (valid == False):
-                   invalid_level_found = True
+#            for diff in diff_line:
+#                valid = is_diff_valid(diff, diff_line[0] > 0)
+#                if (valid == False):
+#                   invalid_level_found = True
 
-            if (invalid_level_found == False):
-                is_safe = True
+#            if (invalid_level_found == False):
+#                is_safe = True
 
         # else the line is not safe
 
-        print(is_safe)
+        #print(is_safe)
+        
         if (is_safe):
             num_safe += 1
+        else:
+            print(lines[line_number])
+
+        line_number += 1
 
     print(num_safe)
 
 ##########################################
 ### scripts
 # open file
-with open('C:\SourceCode\AdventOfCode24\Day2\custom_tests.txt', 'r') as f:
+with open('C:\SourceCode\AdventOfCode24\Day2\custom_tests2.txt', 'r') as f:
     lines = f.readlines()
 
-part_2(lines)
+unsafe_lines = part_1(lines)
+part_2(unsafe_lines)
