@@ -1,75 +1,58 @@
-import re
+def search_up(row, col, lines):
+    return (lines[row - 1][col] == 'M' and lines[row - 2][col] == 'A' and lines[row - 3][col] == 'S')
 
-def get_num_xmas_in_lines(lines):
-    xmas_found = 0
+def search_down(row, col, lines):
+    return (lines[row + 1][col] == 'M' and lines[row + 2][col] == 'A' and lines[row + 3][col] == 'S')
 
-    for line in lines:
-        x = re.findall("XMAS", line)
-        xmas_found += x.count()
+def search_left(row, col, lines):
+    return(lines[row][col - 1] == 'M' and lines[row][col - 2] == 'A' and lines[row][col - 3] == 'S')
 
-    return xmas_found
+def search_right(row, col, lines):
+    return (lines[row][col + 1] == 'M' and lines[row][col + 2] == 'A' and lines[row][col + 3] == 'S')
+
+def search_north_east(row, col, lines):
+    return (lines[row - 1][col + 1] == 'M' and lines[row - 2][col + 2] == 'A' and lines[row - 3][col + 3] == 'S')
+
+def search_north_west(row, col, lines):
+    return (lines[row - 1][col - 1] == 'M' and lines[row - 2][col - 2] == 'A' and lines[row - 3][col - 3] == 'S')
+
+def search_south_east(row, col, lines):
+    return (lines[row + 1][col + 1] == 'M' and lines[row + 2][col + 2] == 'A' and lines[row + 3][col + 3] == 'S')
+
+def search_south_west(row, col, lines):
+    return (lines[row + 1][col - 1] == 'M' and lines[row + 2][col - 2] == 'A' and lines[row + 3][col - 3] == 'S')
 
 #######################################################################
-with open('C:\SourceCode\AdventOfCode24\Day4\\test.txt', 'r') as f:
+with open('C:\SourceCode\AdventOfCode24\Day4\puzzle_input.txt', 'r') as f:
     lines = f.readlines()
 
-rows = lines.count
-cols = len(lines[0])
+num_rows = len(lines)
+num_cols = len(lines[0])
 total_xmas = 0
 
-# get number of xmas when reading wordsearch left to right
-total_xmas += get_num_xmas_in_lines(lines)
-
-# right to left
-horizontal_backwards = []
+# iterate through each line to find an 'X'
+line_number = 0
 for line in lines:
-    horizontal_backwards.append(line[::-1])
+    list = ([pos for pos, char in enumerate(line) if char == 'X'])
+    
+    for index in list:
+        if line_number >= 3:
+            total_xmas += search_up(line_number, index, lines)
+        if line_number <= (num_rows - 4):
+            total_xmas += search_down(line_number, index, lines)
+        if index >= 3:
+            total_xmas += search_left(line_number, index, lines)
+        if index <= (num_cols - 4):
+            total_xmas += search_right(line_number, index, lines)
+        if line_number >= 3 and index <= (num_cols - 4):
+            total_xmas += search_north_east(line_number, index, lines)
+        if line_number >= 3 and index >= 3:
+            total_xmas += search_north_west(line_number, index, lines)
+        if line_number <= (num_rows - 4) and index <= (num_cols - 4):
+            total_xmas += search_south_east(line_number, index, lines)
+        if line_number <= (num_rows - 4) and index >= 3:
+            total_xmas += search_south_west(line_number, index, lines)
 
-total_xmas += get_num_xmas_in_lines(horizontal_backwards)
+    line_number += 1
 
-# up to down
-vertical = []
-for i in range(cols):
-    new_line = ""
-    for line in lines:
-        new_line += line[i]
-    vertical.append(new_line)
-
-total_xmas += get_num_xmas_in_lines(horizontal_backwards)
-
-# down to up (reverse vertical)
-vertical_backwards = []
-for line in vertical:
-    vertical_backwards.append(line[::-1])
-
-total_xmas += get_num_xmas_in_lines(horizontal_backwards)
-
-# diagonally reading NE
-diagonal_north_east = []
-for start_row in range(rows):
-    row = start_row
-
-    if start_row < row - 1:
-        new_line = ""
-        col = 0
-        while row >= 0 and col < cols:
-            new_line += lines[row][col]
-            row -= 1
-            col += 1
-        diagonal_north_east.append(new_line)
-    else:
-        # on the last row iterate through the remaining cols
-        for start_col in range(cols):
-            
-
-
-
-
-
-
-
-# diagonally bottom left to top right
-
-# diagonally top right to bottom left
-
-# diagonally bottom right to top left
+print("Part 1: ", total_xmas)
