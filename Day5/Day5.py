@@ -9,7 +9,6 @@ def check_element_safety(page_order_dict, nums, index):
         j += 1
     return 0
 
-
 def check_line_safety(nums, start_index):
     nums_len = len(nums)
     i = start_index
@@ -49,7 +48,6 @@ populate_dictionary_complete = False
 page_order_dict = {}
 sum = 0
 corrections = 0
-unsafe_info_list = []
 
 for line in lines:
     if populate_dictionary_complete == False:
@@ -86,4 +84,3 @@ for line in lines:
         
 print("Part 1 = ", sum)
 print("Part 2 = ", corrections)
-    
