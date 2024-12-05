@@ -26,17 +26,20 @@ def get_middle_number(nums):
     middle_index = int((len(nums) + 1) / 2)
     return int(nums[middle_index - 1])
 
-def calculate_correction(line, index1, index2):
+def get_corrected_line(nums, index1, index2):
     # swap the incorrect values
-    value1 = line[index1]
-    value2 = line[index2]
-    line[index1] = value2
-    line[index2] = value1
+    value1 = nums[index1]
+    value2 = nums[index2]
+    nums[index1] = value2
+    nums[index2] = value1
 
     # check if it is valid
-
-
-    return 0
+    unsafe_indices = check_line_safety(nums, index1)
+    safe = len(unsafe_indices) == 0
+    if (safe):
+        return nums
+    else:
+        return get_corrected_line(nums, unsafe_indices[0], unsafe_indices[1])
 
 #######################################################################
 with open('C:\SourceCode\AdventOfCode24\Day5\puzzle_input.txt', 'r') as f:
@@ -77,7 +80,10 @@ for line in lines:
         # if the whole line is safe, find the middle number
         if (safe):
             sum += get_middle_number(nums)
-            
+        else:
+            corrected_line = get_corrected_line(nums, unsafe_indices[0], unsafe_indices[1])
+            corrections += get_middle_number(corrected_line)
+        
 print("Part 1 = ", sum)
 print("Part 2 = ", corrections)
     
