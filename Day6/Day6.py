@@ -1,3 +1,5 @@
+from time import perf_counter
+
 def is_out_of_map(pos, num_rows, num_cols):
     if pos[0] < 0 or pos[0] > num_rows - 1:
         return True
@@ -6,6 +8,7 @@ def is_out_of_map(pos, num_rows, num_cols):
     return False
 
 #######################################################################
+start = perf_counter()
 with open('C:\SourceCode\AdventOfCode24\Day6\puzzle_input.txt', 'r') as f:
     lines = f.readlines()
 
@@ -54,4 +57,6 @@ while (in_map):
         if (next_pos in distinct_pos) == False:
             distinct_pos.append(next_pos)
 
+end = perf_counter()
+print(f"Duration for Part 1 = {end - start}")
 print("Part 1 = ", len(distinct_pos))
