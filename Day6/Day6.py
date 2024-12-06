@@ -32,6 +32,21 @@ class Solution:
         self.find_exit_or_loop(self.obstacles, self.guard_path)
         return len(self.guard_path)
 
+    
+    def part_two(self):
+        # to find number of ways to make a look, for each step in the guards path, add an obstacle and check if loop of exit is found
+        num_obstruction_positions = 0
+
+        for step in self.guard_path:
+            if step != self.starting_pos:
+                # add new obstruction, test, remove obstruction
+                self.obstacles.append(step)
+                test_path = {}
+                num_obstruction_positions += self.find_exit_or_loop(self.obstacles, test_path)
+                self.obstacles.remove(step)
+        
+        return num_obstruction_positions
+
 
     def find_exit_or_loop(self, obstacles, path_map):
         # return 0 if exit is found. return 1 if loop is found
@@ -115,7 +130,7 @@ solution.parse_input('C:\SourceCode\AdventOfCode24\Day6\puzzle_input.txt')
 start = perf_counter()
 answer_part_one = solution.part_one()
 print("Part 1 = ", answer_part_one)
-#answer_part_two = solution.part_two()
-#print("Part 2 = ", answer_part_two)
+answer_part_two = solution.part_two()
+print("Part 2 = ", answer_part_two)
 end = perf_counter()
 print(f"Duration = {end - start}")
