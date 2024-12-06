@@ -4,10 +4,10 @@ class Solution:
     def __init__(self):
         self.obstacles = []
         self.distinct_pos = []
+        self.guard_path = {}
         self.num_rows = 0
         self.num_cols = 0
-        self.pos = (0,0)
-
+        self.starting_pos = (0,0)
 
     def parse_input(self, filename):
         with open(filename, 'r') as f:
@@ -21,8 +21,7 @@ class Solution:
                 if line[col] == '#':
                     self.obstacles.append((row, col))
                 elif line[col] == '^':
-                    self.pos = (row, col)
-                    self.distinct_pos.append((row, col))
+                    self.starting_pos = (row, col)
             row += 1
 
         self.num_rows = row
@@ -30,36 +29,65 @@ class Solution:
 
 
     def part_one(self):
-        in_map = True
+        self.find_exit_or_loop(self.obstacles, self.guard_path)
+        return len(self.guard_path)
+
+
+    def find_exit_or_loop(self, obstacles, path_map):
+        # return 0 if exit is found. return 1 if loop is found
+
+        pos = self.starting_pos
         dir = 'u'   # directions can be 'u', 'd, 'l', 'r'
+        path_map[pos] = [dir]
+        
         next_pos = (0,0)
         next_dir = ''
+        loop_found = False
 
-        while (in_map):
+        while (1):
             # determine next action - rotate 90 degrees or take a step forward
             if dir == 'u':
-                next_pos = (self.pos[0] - 1, self.pos[1])
+                next_pos = (pos[0] - 1, pos[1])
                 next_dir = 'r'
             elif dir == 'r':
-                next_pos = (self.pos[0], self.pos[1] + 1)
+                next_pos = (pos[0], pos[1] + 1)
                 next_dir = 'd'
             elif dir == 'd':
-                next_pos = (self.pos[0] + 1, self.pos[1])
+                next_pos = (pos[0] + 1, pos[1])
                 next_dir = 'l'
             elif dir == 'l':
-                next_pos = (self.pos[0], self.pos[1] - 1)
+                next_pos = (pos[0], pos[1] - 1)
                 next_dir = 'u'
 
             if self.is_out_of_map(next_pos):
-                in_map = False
-            elif next_pos in self.obstacles:
+                return 0
+            elif next_pos in obstacles:
                 dir = next_dir
+                loop_found = self.add_pos_to_path_map(path_map, pos, dir)
             else:
-                self.pos = next_pos
-                if (next_pos in self.distinct_pos) == False:
-                    self.distinct_pos.append(next_pos)
+                pos = next_pos
+                loop_found = self.add_pos_to_path_map(path_map, pos, dir)
 
-        return len(self.distinct_pos)
+            if loop_found:
+                    return 1
+
+
+    def add_pos_to_path_map(self, path_map, pos, dir):
+        loop_found = False
+        values = path_map.get(pos)
+
+        if values is not None:
+            if (dir in values):
+                loop_found = True
+            else:
+                values.append(dir)
+        else:
+            values = [dir]
+        
+        # update dictionary
+        path_map[pos] = values
+
+        return loop_found
 
 
     def is_out_of_map(self, pos):
@@ -68,13 +96,26 @@ class Solution:
         if pos[1] < 0 or pos[1] > self.num_cols - 1:
             return True
         return False
+    
+
+    def get_new_obstruction_pos(self, pos, dir):
+        if dir == 'u':
+            return (pos[0] - 1, pos[1])
+        elif dir == 'r':
+            return (pos[0], pos[1] + 1)
+        elif dir == 'd':
+            return (pos[0] + 1, pos[1])
+        elif dir == 'l':
+            return (pos[0], pos[1] - 1)
 
 #######################################################################
-start = perf_counter()
 solution = Solution()
 solution.parse_input('C:\SourceCode\AdventOfCode24\Day6\puzzle_input.txt')
-answer_part_one = solution.part_one()
-end = perf_counter()
 
-print(f"Part 1 duration = {end - start}")
+start = perf_counter()
+answer_part_one = solution.part_one()
 print("Part 1 = ", answer_part_one)
+#answer_part_two = solution.part_two()
+#print("Part 2 = ", answer_part_two)
+end = perf_counter()
+print(f"Duration = {end - start}")
