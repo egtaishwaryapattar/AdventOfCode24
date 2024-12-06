@@ -34,7 +34,7 @@ class Solution:
 
     
     def part_two(self):
-        # to find number of ways to make a look, for each step in the guards path, add an obstacle and check if loop of exit is found
+        # to find number of ways to make a loop, for each step in the guards path, add an obstacle and check if loop or exit is found
         num_obstruction_positions = 0
 
         for step in self.guard_path:
@@ -78,13 +78,12 @@ class Solution:
                 return 0
             elif next_pos in obstacles:
                 dir = next_dir
-                loop_found = self.add_pos_to_path_map(path_map, pos, dir)
             else:
                 pos = next_pos
-                loop_found = self.add_pos_to_path_map(path_map, pos, dir)
 
+            loop_found = self.add_pos_to_path_map(path_map, pos, dir)
             if loop_found:
-                    return 1
+                return 1
 
 
     def add_pos_to_path_map(self, path_map, pos, dir):
@@ -112,16 +111,6 @@ class Solution:
             return True
         return False
     
-
-    def get_new_obstruction_pos(self, pos, dir):
-        if dir == 'u':
-            return (pos[0] - 1, pos[1])
-        elif dir == 'r':
-            return (pos[0], pos[1] + 1)
-        elif dir == 'd':
-            return (pos[0] + 1, pos[1])
-        elif dir == 'l':
-            return (pos[0], pos[1] - 1)
 
 #######################################################################
 solution = Solution()
