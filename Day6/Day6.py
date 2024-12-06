@@ -1,9 +1,3 @@
-def is_obstacle_ahead(coord, obstacles):
-    return coord in obstacles
-
-def is_area_visited_before(coord, distinct_pos):
-    return coord in distinct_pos
-
 def is_out_of_map(pos, num_rows, num_cols):
     if pos[0] < 0 or pos[0] > num_rows - 1:
         return True
@@ -51,13 +45,13 @@ while (in_map):
         next_pos = (pos[0], pos[1] - 1)
         next_dir = 'u'
 
-    if (is_out_of_map(next_pos, row, num_cols)):
+    if is_out_of_map(next_pos, row, num_cols):
         in_map = False
-    elif (is_obstacle_ahead(next_pos, obstacles)):
+    elif next_pos in obstacles:
             dir = next_dir
     else:
         pos = next_pos
-        if is_area_visited_before(next_pos, distinct_pos) == False:
+        if (next_pos in distinct_pos) == False:
             distinct_pos.append(next_pos)
 
 print("Part 1 = ", len(distinct_pos))
