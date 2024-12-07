@@ -38,16 +38,6 @@ class Solution:
         len_nums = len(nums)
         sum_of_nums = sum(nums)
         product_of_nums = math.prod(nums)
-
-        # quick checks
-        if sum_of_nums == target:
-            return True
-        if sum_of_nums > target:
-            return False        # putting multiplication operations won't make the value smaller to reach targer
-        if product_of_nums == target:
-            return True
-        if product_of_nums < target:
-            return False        # putting addition operations won't make the value larger to reach target
         
         # test if combination of multiplication and addition is needed
         arr = []
