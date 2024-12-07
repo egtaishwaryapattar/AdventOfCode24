@@ -1,4 +1,3 @@
-
 from time import perf_counter
 import math
 import os
@@ -50,9 +49,8 @@ class Solution:
 
     def is_equation_valid(self, target, nums, operators):
         len_nums = len(nums)
-        
-        # test if combination of multiplication and addition is needed
         arr = []
+        
         for i in range(len_nums):
             if i == 0:
                 arr.append(nums[i])
@@ -69,7 +67,6 @@ class Solution:
                         elif operator == '||':
                             arr.append(int(str(val)+str(nums[i])))
         return target in arr
-
 
 #######################################################################
 solution = Solution()
