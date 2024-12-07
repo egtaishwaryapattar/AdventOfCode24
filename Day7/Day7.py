@@ -58,7 +58,7 @@ class Solution:
                 temp = arr.copy()
                 arr.clear()
                 for val in temp:
-                    # the array size keeps increasing with each calculation - each time creating - one for each operation
+                    # the array size keeps increasing with each calculation - each time creating branch - one for each operation
                     for operator in operators:
                         if operator == '+':
                             arr.append(val + nums[i])
