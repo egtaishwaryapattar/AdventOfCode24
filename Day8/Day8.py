@@ -1,4 +1,3 @@
-
 from time import perf_counter
 from operator import sub
 from operator import add
@@ -68,14 +67,10 @@ class Solution:
         for i in range(num_locations - 1):
             j = i + 1
             while j < num_locations:
-                # find distance between the antenna at i and antenna at j (directin: going from i to j)
-                pos1 = locations[i]
-                pos2 = locations[j]
-                diff = tuple(map(sub, pos2, pos1))
-
-                # find node positions subtracting the diff from pos1
-                self.propogate_antinodes(pos1, diff, num_iterations, sub)
-                self.propogate_antinodes(pos2, diff, num_iterations, add)
+                # find distance between the antenna at i and antenna at j (directin: going from i to j). then propogate in direction
+                diff = tuple(map(sub, locations[j], locations[i]))
+                self.propogate_antinodes(locations[i], diff, num_iterations, sub)
+                self.propogate_antinodes(locations[j], diff, num_iterations, add)
 
                 j += 1
 
