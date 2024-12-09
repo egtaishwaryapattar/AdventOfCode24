@@ -82,7 +82,7 @@ class Solution:
 
         while disk_map_index < len(self.disk_map):
             if disk_map_index % 2 == 0:
-                value_space_sizes.append(self.disk_map[disk_map_index])
+                value_space_sizes.append(int(self.disk_map[disk_map_index]))
             disk_map_index += 1
 
         value = len(value_space_sizes) - 1        # NOTE: the VALUE also corresponds to the index to use for value_space_sizes to get how many times VALUE was outputted
@@ -106,6 +106,7 @@ class Solution:
             # iterate forwards through block, unit reverse_index, until a space block that fits is found
             i = 0
             consecutive_spaces = 0
+            values_swapped = False
             while i < reverse_index:
                 if self.blocks.get(i) == '.':
                     consecutive_spaces += 1
@@ -117,15 +118,18 @@ class Solution:
                             self.blocks[reverse_index] = '.'
                             reverse_index -=1
                         
-                        # decrement the value to look for next
-                        value -= 1
+                        values_swapped = True
                         break
                 else:
                     consecutive_spaces = 0
-
                 i += 1
 
-            reverse_index -= 1
+            # if value is not found so reverse the index by the number of spaces it occupied
+            if values_swapped == False:
+                reverse_index = reverse_index - num_spaces
+            
+            # decrement the value to look for the next value
+            value -= 1
 
 
     def calculate_checksum(self):
@@ -139,18 +143,18 @@ class Solution:
             checksum += value * i
 
         return checksum
-        value
+        
 
 #######################################################################
 solution = Solution()
 dirname = os.path.dirname(__file__)
-filename = os.path.join(dirname, 'test2.txt')
+filename = os.path.join(dirname, 'puzzle_input.txt')
 solution.parse_input(filename)
 
 start = perf_counter()
 answer_part1 = solution.part_one()
 print("Part1 = ", answer_part1)
 answer_part2 = solution.part_two()
-print("Part2 = ", answer_part2)
+print("Part2 = ", answer_part2) 
 end = perf_counter()
 print(f"Duration = {end - start}")
