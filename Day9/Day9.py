@@ -4,15 +4,18 @@ import os
 
 class Solution:
     def __init__(self):
+        self.disk_map = ""
         self.blocks = {}    # key = the index, value = value stored at that index position
+        self.blocks_copy = {}
 
     def parse_input(self, filename):
         with open(filename, 'r') as f:
             lines = f.readlines()
             
         # the input is only one line  
-        disk_map = lines[0]
-        self.get_blocks(disk_map)
+        self.disk_map = lines[0]
+        self.get_blocks(self.disk_map)
+        self.blocks_copy = self.blocks.copy()
         
     def part_one(self):
         self.compact_files()
@@ -20,7 +23,10 @@ class Solution:
         
 
     def part_two(self):
-        return 0
+        # reset block dictionary from part 1
+        self.blocks = self.blocks_copy.copy()
+        self.compact_files_2()
+        return self.calculate_checksum()
     
 
     def get_blocks(self, disk_map):
@@ -68,6 +74,58 @@ class Solution:
                     reverse_index -= 1
 
             forward_index += 1
+    
+
+    def compact_files_2(self):
+        value_space_sizes = []
+        disk_map_index = 0
+
+        while disk_map_index < len(self.disk_map):
+            if disk_map_index % 2 == 0:
+                value_space_sizes.append(self.disk_map[disk_map_index])
+            disk_map_index += 1
+
+        value = len(value_space_sizes) - 1        # NOTE: the VALUE also corresponds to the index to use for value_space_sizes to get how many times VALUE was outputted
+        reverse_index = len(self.blocks) - 1
+
+        # iterate backwards through the blocks
+        while reverse_index > 0:
+
+            # find index which has the value we are looking for
+            block_value = self.blocks.get(reverse_index)
+            while block_value != value:
+                reverse_index -=1
+                if reverse_index <= 0:
+                    break
+                else:
+                    block_value = self.blocks.get(reverse_index)
+            
+            # get number of spaces the value occupies
+            num_spaces = value_space_sizes[value]
+
+            # iterate forwards through block, unit reverse_index, until a space block that fits is found
+            i = 0
+            consecutive_spaces = 0
+            while i < reverse_index:
+                if self.blocks.get(i) == '.':
+                    consecutive_spaces += 1
+
+                    if consecutive_spaces == num_spaces:
+                        # found a space block that would fit the values. Swap the value and '.'
+                        for j in range(num_spaces):
+                            self.blocks[i-j] = value
+                            self.blocks[reverse_index] = '.'
+                            reverse_index -=1
+                        
+                        # decrement the value to look for next
+                        value -= 1
+                        break
+                else:
+                    consecutive_spaces = 0
+
+                i += 1
+
+            reverse_index -= 1
 
 
     def calculate_checksum(self):
@@ -76,23 +134,23 @@ class Solution:
         for i in range(len(self.blocks)):
             value = self.blocks.get(i)
             if value == '.':
-                break
-            else:
-                checksum += value * i
+                value = 0
+            
+            checksum += value * i
 
         return checksum
-
+        value
 
 #######################################################################
 solution = Solution()
 dirname = os.path.dirname(__file__)
-filename = os.path.join(dirname, 'puzzle_input.txt')
+filename = os.path.join(dirname, 'test2.txt')
 solution.parse_input(filename)
 
 start = perf_counter()
 answer_part1 = solution.part_one()
 print("Part1 = ", answer_part1)
-#answer_part2 = solution.part_two()
-#print("Part2 = ", answer_part2)
+answer_part2 = solution.part_two()
+print("Part2 = ", answer_part2)
 end = perf_counter()
 print(f"Duration = {end - start}")
