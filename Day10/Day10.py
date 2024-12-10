@@ -31,45 +31,43 @@ class Solution:
         self.num_cols = col_number
         
         
-    def part_one(self):
+    def run(self):
         sum_of_trailhead_score = 0
+        sum_of_trails = 0
         for trailhead in self.trailheads:
-            score = self.breath_first_search(trailhead)
+            (score, trails) = self.breadth_first_search(trailhead)
             sum_of_trailhead_score += score
-        return sum_of_trailhead_score
-        
-
-    def part_two(self):
-        return 0
+            sum_of_trails += trails
+        return (sum_of_trailhead_score, sum_of_trails)
     
 
-    def breath_first_search(self, trailhead):
+    def breadth_first_search(self, trailhead):
         q = [trailhead]
         end_positions_found = []
-        visited_coords = []
+        num_trails = 0
 
         while len(q) > 0:
             # pop off the coordinate at the front of the queue and get value at the coordinate position
             coord = q.pop(0)
-            if coord not in visited_coords:
-                # only test coords we haven't visited before to save looking down a path we have already searched
-                visited_coords.append(coord)
-                search_value = self.grid[coord[0]][coord[1]] + 1
+            search_value = self.grid[coord[0]][coord[1]] + 1
 
-                # only searching for values between 0 - 9
-                if search_value <= 9:
-                    found_pos = self.search_around(coord, search_value)
-                    if (len(found_pos) > 0):
-                        if search_value == 9:
-                            # once 9 (the end position) is found. Check if this is a new end position that has been found
-                            for pos in found_pos:
-                                if pos not in end_positions_found:
-                                    end_positions_found.append(pos)
-                        else:
-                            # add new found positions to front of array
-                            q = found_pos + q
+            # only searching for values between 0 - 9
+            if search_value <= 9:
+                found_pos = self.search_around(coord, search_value)
+                if (len(found_pos) > 0):
+                    if search_value == 9:
+                        # end position found
+                        num_trails += len(found_pos)
+
+                        for pos in found_pos:
+                            if pos not in end_positions_found:
+                                end_positions_found.append(pos)
+                    else:
+                        # add new found positions to front of array
+                        q = found_pos + q
         
-        return len(end_positions_found)
+        return (len(end_positions_found), num_trails)
+
 
     def search_around(self, curr_pos, search_value):
         # search north, east, south, west from current position to find the search value
@@ -101,9 +99,8 @@ filename = os.path.join(dirname, 'puzzle_input.txt')
 solution.parse_input(filename)
 
 start = perf_counter()
-answer_part1 = solution.part_one()
-print("Part1 = ", answer_part1)
-#answer_part2 = solution.part_two()
-#print("Part2 = ", answer_part2) 
+answer = solution.run()
+print("Part1 = ", answer[0])
+print("Part2 = ", answer[1]) 
 end = perf_counter()
 print(f"Duration = {end - start}")
