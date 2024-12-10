@@ -46,24 +46,28 @@ class Solution:
     def breath_first_search(self, trailhead):
         q = [trailhead]
         end_positions_found = []
+        visited_coords = []
 
         while len(q) > 0:
             # pop off the coordinate at the front of the queue and get value at the coordinate position
             coord = q.pop(0)
-            search_value = self.grid[coord[0]][coord[1]] + 1
+            if coord not in visited_coords:
+                # only test coords we haven't visited before to save looking down a path we have already searched
+                visited_coords.append(coord)
+                search_value = self.grid[coord[0]][coord[1]] + 1
 
-            # only searching for values between 0 - 9
-            if search_value <= 9:
-                found_pos = self.search_around(coord, search_value)
-                if (len(found_pos) > 0):
-                    if search_value == 9:
-                        # once 9 (the end position) is found. Check if this is a new end position that has been found
-                        for pos in found_pos:
-                            if pos not in end_positions_found:
-                                end_positions_found.append(pos)
-                    else:
-                        # add new found positions to front of array
-                        q = found_pos + q
+                # only searching for values between 0 - 9
+                if search_value <= 9:
+                    found_pos = self.search_around(coord, search_value)
+                    if (len(found_pos) > 0):
+                        if search_value == 9:
+                            # once 9 (the end position) is found. Check if this is a new end position that has been found
+                            for pos in found_pos:
+                                if pos not in end_positions_found:
+                                    end_positions_found.append(pos)
+                        else:
+                            # add new found positions to front of array
+                            q = found_pos + q
         
         return len(end_positions_found)
 
