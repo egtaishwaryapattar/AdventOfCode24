@@ -3,40 +3,62 @@ import os
 
 class Solution:
     def __init__(self):
-        self.arr = []
+        self.line_dict = {} # key = unique number in the line. value = occurrence of number in the line
 
     
     def parse_input(self, filename):
         with open(filename, 'r') as f:
             lines = f.readlines()
-            line = lines[0]
-            self.arr = line.split(' ')
+
+        line = lines[0]
+        values = line.split(' ')
+        for value in values:
+            self.add_value_to_dict(self.line_dict, value, 1)
 
     
     def part_one(self):
-        for i in range(25):
-            temp_arr = []
-            for val in self.arr:
-                if val == '0':
-                    temp_arr.append('1')
-                elif len(val) % 2 == 0:
-                    #split string in two and append each half
-                    half = int(len(val)/2)
-                    first_num = int(val[:half])
-                    second_num = int(val[half:])
-                    temp_arr.append(str(first_num))
-                    temp_arr.append(str(second_num))
-                else:
-                    new_val = int(val) * 2024
-                    temp_arr.append(str(new_val))
-            
-            self.arr = temp_arr
+        self.apply_rules(25)
+        return self.get_line_length(self.line_dict)
 
-        return len(self.arr)
 
     def part_two(self):
-        return 0
+        self.apply_rules(50)        # apply rules 50 more times so it's run 75 times
+        return self.get_line_length(self.line_dict)
     
+
+    def apply_rules(self, num_times):
+        for i in range(num_times):
+            temp_dict = {}
+
+            for key in self.line_dict:
+                occurence = self.line_dict.get(key)
+                
+                if key == '0':
+                    self.add_value_to_dict(temp_dict, '1', occurence)
+
+                elif len(key) % 2 == 0:
+                    #split string in two and append each half
+                    half = int(len(key)/2)
+                    first_num = int(key[:half])
+                    second_num = int(key[half:])
+
+                    self.add_value_to_dict(temp_dict, str(first_num), occurence)
+                    self.add_value_to_dict(temp_dict, str(second_num), occurence)
+
+                else:
+                    new_key = int(key) * 2024
+                    self.add_value_to_dict(temp_dict, str(new_key), occurence)
+            
+            self.line_dict = temp_dict
+
+
+    def add_value_to_dict(self, dict, key, value):
+        dict[key] = dict.get(key, 0) + value
+
+    
+    def get_line_length(self, dict):
+        occurrences = dict.values()
+        return sum(occurrences)
 
 
 ###################################################################################
