@@ -7,7 +7,7 @@ class Solution:
         self.num_cols = 0
         self.plant_dict = {}    # dictionary where key is letter and value is coord position
         self.plot_dict = {} # dictionary with key = Letter, value = list of list of coordinates (each list representing a unique plot)
-        
+
 
     def parse_input(self, filename):
         with open(filename, 'r') as f:
@@ -17,19 +17,19 @@ class Solution:
         self.sort_plants_into_plots()
 
     
-    def part_one(self):
-        result = 0
+    def run(self):
+        result1 = 0
+        result2 = 0
+
         for plant_type in self.plot_dict:
             plots = self.plot_dict.get(plant_type)
             for plot in plots:
                 area = len(plot)
-                perimeter = self.get_perimeter_of_plot(plot)
-                result += area * perimeter
-        return result
+                (perimeter, num_sides) = self.get_perimeter_of_plot(plot)
+                result1 += area * perimeter
+                result2 += area * num_sides
 
-
-    def part_two(self):
-        return 0
+        return (result1, result2)
 
 
     def add_to_plant_dict(self, lines):
@@ -113,26 +113,65 @@ class Solution:
     def get_perimeter_of_plot(self, plot):
         # to find perimeter, go through each position in plot and check if it has a side that it doesn't share with another point in the plot
         perimeter = 0
+        num_sides = 0
+
         for pos in plot:
+            neighbours = []
+
             directions = [  (pos[0] - 1, pos[1]), # north 
                             (pos[0], pos[1] + 1), # east
                             (pos[0] + 1, pos[1]), # south
                             (pos[0], pos[1] - 1)] # west
-            for neighbour in directions:
-                if neighbour not in plot:
+            
+            for dir in directions:
+                if dir not in plot:
                     perimeter += 1
-        return perimeter
+                    neighbours.append(dir)
+
+            # check if this is a corner point
+            num_neighbours = len(neighbours)
+            if num_neighbours == 4:
+                num_sides += num_neighbours          # single plot so account for all 4 sides
+
+            elif num_neighbours == 3:
+                num_sides += (num_neighbours - 1)      # need to subtract 1 so we don't count sides twice
+
+            elif num_neighbours == 2:
+                # TODO:
+                if ((neighbours[0] == directions[0] and neighbours[1] == directions[1])
+                    or (neighbours[0] == directions[1] and neighbours[1] == directions[0])) :      # check north - east
+
+
+
+
+
+
+
+
+                # make sure the neighbours don't run parallel because then it is not a corner
+                if neighbours[0] == directions[0] and neighbours[1] == directions[2]:      # check north - south
+                    continue
+                if neighbours[1] == directions[0] and neighbours[0] == directions[2]:      # check north - south
+                    continue
+                if neighbours[0] == directions[1] and neighbours[1] == directions[3]:      # check east - west
+                    continue
+                if neighbours[1] == directions[1] and neighbours[0] == directions[3]:      # check east - west
+                    continue
+
+                # TODO: fix logic here... maybe check if there is another plot point diagonally
+                num_sides += (num_neighbours - 1)      # need to subtract 1 so we don't count sides twice
+
+        return (perimeter, num_sides)
 
 
 ###################################################################################
 solution = Solution()
 dir_name = os.path.dirname(__file__)
-filename = os.path.join(dir_name, 'puzzle_input.txt')
+filename = os.path.join(dir_name, 'test.txt')
 
 start = perf_counter()
 solution.parse_input(filename)
-part1 = solution.part_one()     # 1542484 is too high
-part2 = solution.part_two()
+(part1, part2) = solution.run()     
 end = perf_counter()
 print(f"Part 1 = {part1}")
 print(f"Part 2 = {part2}")
