@@ -92,11 +92,7 @@ class Solution:
         directions = [  (coord[0] - 1, coord[1]), # north 
                         (coord[0], coord[1] + 1), # east
                         (coord[0] + 1, coord[1]), # south
-                        (coord[0], coord[1] - 1), # west
-                        (coord[0] - 1, coord[1] + 1), # NE 
-                        (coord[0] - 1, coord[1] - 1), # NW
-                        (coord[0] + 1, coord[1] + 1), # SE 
-                        (coord[0] + 1, coord[1] - 1)] # SW
+                        (coord[0], coord[1] - 1)] # west
         
         neighbours = []
         for new_pos in directions:
