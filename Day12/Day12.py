@@ -15,10 +15,17 @@ class Solution:
 
         self.add_to_plant_dict(lines)
         self.sort_plants_into_plots()
-        
+
     
     def part_one(self):
-        return 0
+        result = 0
+        for plant_type in self.plot_dict:
+            plots = self.plot_dict.get(plant_type)
+            for plot in plots:
+                area = len(plot)
+                perimeter = self.get_perimeter_of_plot(plot)
+                result += area * perimeter
+        return result
 
 
     def part_two(self):
@@ -107,14 +114,28 @@ class Solution:
         return True
     
 
+    def get_perimeter_of_plot(self, plot):
+        # to find perimeter, go through each position in plot and check if it has a side that it doesn't share with another point in the plot
+        perimeter = 0
+        for pos in plot:
+            directions = [  (pos[0] - 1, pos[1]), # north 
+                            (pos[0], pos[1] + 1), # east
+                            (pos[0] + 1, pos[1]), # south
+                            (pos[0], pos[1] - 1)] # west
+            for neighbour in directions:
+                if neighbour not in plot:
+                    perimeter += 1
+        return perimeter
+
+
 ###################################################################################
 solution = Solution()
 dir_name = os.path.dirname(__file__)
-filename = os.path.join(dir_name, 'test3.txt')
+filename = os.path.join(dir_name, 'puzzle_input.txt')
 
 start = perf_counter()
 solution.parse_input(filename)
-part1 = solution.part_one()
+part1 = solution.part_one()     # 1542484 is too high
 part2 = solution.part_two()
 end = perf_counter()
 print(f"Part 1 = {part1}")
