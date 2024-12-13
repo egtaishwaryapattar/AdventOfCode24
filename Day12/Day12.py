@@ -25,7 +25,8 @@ class Solution:
             plots = self.plot_dict.get(plant_type)
             for plot in plots:
                 area = len(plot)
-                (perimeter, num_sides) = self.get_perimeter_of_plot(plot)
+                perimeter = self.get_perimeter_of_plot(plot)
+                num_sides = self.get_sides_of_plot(plot)
                 result1 += area * perimeter
                 result2 += area * num_sides
 
@@ -113,11 +114,9 @@ class Solution:
     def get_perimeter_of_plot(self, plot):
         # to find perimeter, go through each position in plot and check if it has a side that it doesn't share with another point in the plot
         perimeter = 0
-        num_sides = 0
 
         for pos in plot:
             neighbours = []
-
             directions = [  (pos[0] - 1, pos[1]), # north 
                             (pos[0], pos[1] + 1), # east
                             (pos[0] + 1, pos[1]), # south
@@ -128,46 +127,64 @@ class Solution:
                     perimeter += 1
                     neighbours.append(dir)
 
-            # check if this is a corner point
-            num_neighbours = len(neighbours)
-            if num_neighbours == 4:
-                num_sides += num_neighbours          # single plot so account for all 4 sides
-
-            elif num_neighbours == 3:
-                num_sides += (num_neighbours - 1)      # need to subtract 1 so we don't count sides twice
-
-            elif num_neighbours == 2:
-                # TODO:
-                if ((neighbours[0] == directions[0] and neighbours[1] == directions[1])
-                    or (neighbours[0] == directions[1] and neighbours[1] == directions[0])) :      # check north - east
+        return perimeter
 
 
+    def get_sides_of_plot(self, plot):
+        # can get the sides by counting the corners - look out for concave and convex corners
+        num_corners = 0
+        
+        for pos in plot:
+            # for each plot point, check the 4 corners to see how many corners it has
 
+            # check NE corner
+            ne_points = [   (pos[0] - 1, pos[1]),       # north
+                            (pos[0] - 1, pos[1] + 1),   # north east
+                            (pos[0], pos[1] + 1)]       # east
+            num_corners += self.is_corner(pos, ne_points, plot)
 
+            # check NW corner
+            nw_points = [   (pos[0] - 1, pos[1]),       # north
+                            (pos[0] - 1, pos[1] - 1),   # north west
+                            (pos[0], pos[1] - 1)]       # west
+            num_corners += self.is_corner(pos, nw_points, plot)
 
+            # check SE corner
+            se_points = [   (pos[0] + 1, pos[1]),       # south
+                            (pos[0] + 1, pos[1] + 1),   # south east
+                            (pos[0], pos[1] + 1)]       # east
+            num_corners += self.is_corner(pos, se_points, plot)
 
+            # check SW corner
+            sw_points = [   (pos[0] + 1, pos[1]),       # south
+                            (pos[0] + 1, pos[1] - 1),   # south west
+                            (pos[0], pos[1] - 1)]       # west
+            num_corners += self.is_corner(pos, sw_points, plot)
 
+        return num_corners
+    
 
-                # make sure the neighbours don't run parallel because then it is not a corner
-                if neighbours[0] == directions[0] and neighbours[1] == directions[2]:      # check north - south
-                    continue
-                if neighbours[1] == directions[0] and neighbours[0] == directions[2]:      # check north - south
-                    continue
-                if neighbours[0] == directions[1] and neighbours[1] == directions[3]:      # check east - west
-                    continue
-                if neighbours[1] == directions[1] and neighbours[0] == directions[3]:      # check east - west
-                    continue
+    def is_corner(self, pos, surrounding_points, plot):
+        # in surrounding points, make sure the diagonal is in index [1]
 
-                # TODO: fix logic here... maybe check if there is another plot point diagonally
-                num_sides += (num_neighbours - 1)      # need to subtract 1 so we don't count sides twice
+        # check if it is a convex corner 
+        if (surrounding_points[0] not in plot
+            and surrounding_points[2] not in plot):
+            return 1
 
-        return (perimeter, num_sides)
+        # check for concanve corners
+        if (surrounding_points[0] in plot
+            and surrounding_points[1] not in plot
+            and surrounding_points[2] in plot):
+            return 1
+        
+        return 0
 
 
 ###################################################################################
 solution = Solution()
 dir_name = os.path.dirname(__file__)
-filename = os.path.join(dir_name, 'test.txt')
+filename = os.path.join(dir_name, 'puzzle_input.txt')
 
 start = perf_counter()
 solution.parse_input(filename)
