@@ -8,7 +8,7 @@ class ClawGameParams:
         self.A = coord_A
         self.B = coord_B
         self.prize = coord_prize
-
+'''
 class AttemptNumber:
     def __init__(self):
         self.num_attempts = 0
@@ -35,7 +35,7 @@ class AttemptNumber:
         self.tokens_used += a + 3 * b
 
         return self.coordinate
-
+'''
 
 class Solution:
     def __init__(self):
@@ -78,28 +78,28 @@ class Solution:
     def play_game(self, game):
         # return the least number of tokens used - there could be more than 1 way of using tokens to get the answer
         prize_reached = []
-        moves = [AttemptNumber()]
+        moves = [[0, (0,0)]] # list of array containing [tokens_used, (current_coord)]
 
         while len(moves) > 0:
             temp_moves = []
             for move in moves:
                 # For each move, create one new move where A is added, and one new move where B is added
-                move_a = AttemptNumber()
-                move_a.copy(move)
-                new_coord = move_a.make_move(1, 0, game.A)
-                if new_coord[0] < game.prize[0] and new_coord[1] < game.prize[1]:
-                    temp_moves.append(move_a)
-                elif new_coord[0] == game.prize[0] and new_coord[1] == game.prize[1]:
-                    prize_reached.append(move_a)
+                curr_coord = move[1]
+
+                new_coord_a = (curr_coord[0] + game.A[0], curr_coord[1] + game.A[1])
+                tokens = move[0] + 1
+                if new_coord_a[0] < game.prize[0] and new_coord_a[1] < game.prize[1]:
+                    temp_moves.append([tokens, new_coord_a])
+                elif new_coord_a[0] == game.prize[0] and new_coord_a[1] == game.prize[1]:
+                    prize_reached.append([tokens, new_coord_a])
                 # else if target is exceeded, discard
 
-                move_b = AttemptNumber()
-                move_b.copy(move)
-                new_coord = move_b.make_move(0, 1, game.B)
-                if new_coord[0] < game.prize[0] and new_coord[1] < game.prize[1]:
-                    temp_moves.append(move_b)
-                elif new_coord[0] == game.prize[0] and new_coord[1] == game.prize[1]:
-                    prize_reached.append(move_b)
+                new_coord_b = (curr_coord[0] + game.B[0], curr_coord[1] + game.B[1])
+                tokens = move[0] + 3
+                if new_coord_b[0] < game.prize[0] and new_coord_b[1] < game.prize[1]:
+                    temp_moves.append([tokens, new_coord_b])
+                elif new_coord_b[0] == game.prize[0] and new_coord_b[1] == game.prize[1]:
+                    prize_reached.append([tokens, new_coord_b])
                 # else if target is exceeded, discard
                 
             moves = temp_moves.copy()
