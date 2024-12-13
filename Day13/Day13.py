@@ -8,34 +8,6 @@ class ClawGameParams:
         self.A = coord_A
         self.B = coord_B
         self.prize = coord_prize
-'''
-class AttemptNumber:
-    def __init__(self):
-        self.num_attempts = 0
-        self.buttonA_pressed = 0
-        self.buttonB_pressed = 0
-        self.coordinate = (0,0)
-        self.tokens_used = 0
-
-    def copy(self, attempt):
-        self.num_attempts = attempt.num_attempts
-        self.buttonA_pressed = attempt.buttonA_pressed
-        self.buttonB_pressed = attempt.buttonB_pressed
-        self.coordinate = attempt.coordinate
-        self.tokens_used = attempt.tokens_used
-
-    def make_move(self, a, b, dist):
-        # a or b should be 0 or 1
-        # moving A = 1 token
-        # moving B = 3 tokens
-        self.num_attempts += 1
-        self.buttonA_pressed += a
-        self.buttonB_pressed += b
-        self.coordinate = (self.coordinate[0] + dist[0], self.coordinate[1] + dist[1])
-        self.tokens_used += a + 3 * b
-
-        return self.coordinate
-'''
 
 class Solution:
     def __init__(self):
@@ -68,7 +40,7 @@ class Solution:
         total_tokens = 0
         for game in self.claw_games:
             total_tokens += self.play_game(game)
-        return 0
+        return total_tokens
 
 
     def part_two(self):
@@ -77,41 +49,19 @@ class Solution:
 
     def play_game(self, game):
         # return the least number of tokens used - there could be more than 1 way of using tokens to get the answer
-        prize_reached = []
-        moves = [[0, (0,0)]] # list of array containing [tokens_used, (current_coord)]
+        tokens_to_win = []
+        for a in range(100):
+            for b in range(100):
+                x = a * game.A[0] + b * game.B[0]
+                y = a * game.A[1] + b * game.B[1]
 
-        while len(moves) > 0:
-            temp_moves = []
-            for move in moves:
-                # For each move, create one new move where A is added, and one new move where B is added
-                curr_coord = move[1]
+                if x == game.prize[0] and y == game.prize[1]:
+                    tokens_to_win.append(a * 3 + b)
 
-                new_coord_a = (curr_coord[0] + game.A[0], curr_coord[1] + game.A[1])
-                tokens = move[0] + 1
-                if new_coord_a[0] < game.prize[0] and new_coord_a[1] < game.prize[1]:
-                    temp_moves.append([tokens, new_coord_a])
-                elif new_coord_a[0] == game.prize[0] and new_coord_a[1] == game.prize[1]:
-                    prize_reached.append([tokens, new_coord_a])
-                # else if target is exceeded, discard
-
-                new_coord_b = (curr_coord[0] + game.B[0], curr_coord[1] + game.B[1])
-                tokens = move[0] + 3
-                if new_coord_b[0] < game.prize[0] and new_coord_b[1] < game.prize[1]:
-                    temp_moves.append([tokens, new_coord_b])
-                elif new_coord_b[0] == game.prize[0] and new_coord_b[1] == game.prize[1]:
-                    prize_reached.append([tokens, new_coord_b])
-                # else if target is exceeded, discard
-                
-            moves = temp_moves.copy()
-
-        if len(prize_reached) == 0:
-            return 0
-
-        # find the min tokens used to reach prize
-        min_tokens = math.inf
-        for prize in prize_reached:
-            if prize.tokens_used < min_tokens:
-                min_tokens = prize.tokens_used
+        if len(tokens_to_win) > 0:
+            min_token = min(tokens_to_win)
+            return min_token
+        return 0
 
                 
 
@@ -120,7 +70,7 @@ class Solution:
 ###################################################################################
 solution = Solution()
 dir_name = os.path.dirname(__file__)
-filename = os.path.join(dir_name, 'test.txt')
+filename = os.path.join(dir_name, 'puzzle_input.txt')
 solution.parse_input(filename)
 
 start = perf_counter()
