@@ -61,7 +61,7 @@ class Solution:
         b = numerator / denominator
 
         # check for rounding errors in float representation
-        if abs(round(b) - b) < 0.000001:
+        if abs(round(b) - b) < 0.0001:
             b = round(b)
 
         if b == int(b):
@@ -70,8 +70,8 @@ class Solution:
             if abs(round(a) - a) < 0.000001:
                 a = round(a)
                 tokens = a * 3 + b
-                
-        return int(tokens)
+                 
+        return tokens
 
 
 ###################################################################################
@@ -82,8 +82,8 @@ solution.parse_input(filename)
 
 start = perf_counter()
 part1 = solution.part_one()
-#part2 = solution.part_two()
+part2 = solution.part_two()
 end = perf_counter()
 print(f"Part 1 = {part1}")
-#print(f"Part 2 = {part2}")
+print(f"Part 2 = {part2}")         
 print(f"Duration = {end - start}s")
