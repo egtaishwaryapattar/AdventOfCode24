@@ -1,7 +1,6 @@
 from time import perf_counter
 import os
 import re
-from sympy import symbols, Eq, solve 
 
 class ClawGameParams:
     def __init__(self, coord_A, coord_B, coord_prize):
@@ -55,8 +54,6 @@ class Solution:
     def play_game(self, game):
         # return the least number of tokens used - always only one token. Solve as simultaneous equation
         tokens = 0
-        found_manually = False
-        found_w_sympy = False
         
         # solve for b
         numerator = game.prize[0] - ( game.prize[1] * game.A[0] ) / game.A[1]
@@ -73,23 +70,6 @@ class Solution:
             if abs(round(a) - a) < 0.000001:
                 a = round(a)
                 tokens = a * 3 + b
-                found_manually = True
-            
-        x,y = symbols('x,y')
-        eq1 = Eq(( game.A[0] * x + game.B[0] * y) , game.prize[0])
-        eq2 = Eq(( game.A[1] * x + game.B[1] * y) , game.prize[1])
-
-        answer = solve((eq1, eq2), (x,y))
-        press_a = answer.get(x)
-        press_b = answer.get(y)
-
-        if press_a.denominator == 1:
-            if press_b.denominator == 1:
-                t = press_a.numerator * 3 + press_b.numerator #20 15
-                found_w_sympy = True
-
-        if found_manually != found_w_sympy:
-            print("mismatch")
                 
         return int(tokens)
 
