@@ -1,7 +1,7 @@
 from time import perf_counter
 import os
 import re
-import math
+from sympy import symbols, Eq, solve 
 
 class ClawGameParams:
     def __init__(self, coord_A, coord_B, coord_prize):
@@ -55,13 +55,17 @@ class Solution:
     def play_game(self, game):
         # return the least number of tokens used - always only one token
         tokens = 0
-        for a in range(100):
-            for b in range(100):
-                x = a * game.A[0] + b * game.B[0]
-                y = a * game.A[1] + b * game.B[1]
+        a,b = symbols('a,b')
+        eq1 = Eq(( game.A[0] * a + game.B[0] * b) , game.prize[0])
+        eq2 = Eq(( game.A[1] * a + game.B[1] * b) , game.prize[1])
 
-                if x == game.prize[0] and y == game.prize[1]:
-                    tokens = a * 3 + b
+        answer = solve((eq1, eq2), (a,b))
+        press_a = answer.get(a)
+        press_b = answer.get(b)
+
+        if press_a.denominator == 1:
+            if press_b.denominator == 1:
+                tokens = press_a.numerator * 3 + press_b.numerator
         return tokens
 
 
