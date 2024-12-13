@@ -53,20 +53,45 @@ class Solution:
     
 
     def play_game(self, game):
-        # return the least number of tokens used - always only one token
+        # return the least number of tokens used - always only one token. Solve as simultaneous equation
         tokens = 0
-        a,b = symbols('a,b')
-        eq1 = Eq(( game.A[0] * a + game.B[0] * b) , game.prize[0])
-        eq2 = Eq(( game.A[1] * a + game.B[1] * b) , game.prize[1])
+        found_manually = False
+        found_w_sympy = False
+        
+        # solve for b
+        numerator = game.prize[0] - ( game.prize[1] * game.A[0] ) / game.A[1]
+        denominator = game.B[0] - ( game.B[1] * game.A[0] ) / game.A[1]
+        b = numerator / denominator
 
-        answer = solve((eq1, eq2), (a,b))
-        press_a = answer.get(a)
-        press_b = answer.get(b)
+        # check for rounding errors in float representation
+        if abs(round(b) - b) < 0.000001:
+            b = round(b)
+
+        if b == int(b):
+            # b is a whole number - find a
+            a = ( game.prize[0] - game.B[0] * b ) / game.A[0]
+            if abs(round(a) - a) < 0.000001:
+                a = round(a)
+                tokens = a * 3 + b
+                found_manually = True
+            
+        x,y = symbols('x,y')
+        eq1 = Eq(( game.A[0] * x + game.B[0] * y) , game.prize[0])
+        eq2 = Eq(( game.A[1] * x + game.B[1] * y) , game.prize[1])
+
+        answer = solve((eq1, eq2), (x,y))
+        press_a = answer.get(x)
+        press_b = answer.get(y)
 
         if press_a.denominator == 1:
             if press_b.denominator == 1:
-                tokens = press_a.numerator * 3 + press_b.numerator
-        return tokens
+                t = press_a.numerator * 3 + press_b.numerator #20 15
+                found_w_sympy = True
+
+        if found_manually != found_w_sympy:
+            print("mismatch")
+                
+        return int(tokens)
 
 
 ###################################################################################
