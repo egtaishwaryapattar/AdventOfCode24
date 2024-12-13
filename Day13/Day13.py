@@ -44,27 +44,25 @@ class Solution:
 
 
     def part_two(self):
-        return 0
+        total_tokens = 0
+        for game in self.claw_games:
+            # first modify target
+            game.prize = (10000000000000 + game.prize[0], 10000000000000 + game.prize[1])
+            total_tokens += self.play_game(game)
+        return total_tokens
     
 
     def play_game(self, game):
-        # return the least number of tokens used - there could be more than 1 way of using tokens to get the answer
-        tokens_to_win = []
+        # return the least number of tokens used - always only one token
+        tokens = 0
         for a in range(100):
             for b in range(100):
                 x = a * game.A[0] + b * game.B[0]
                 y = a * game.A[1] + b * game.B[1]
 
                 if x == game.prize[0] and y == game.prize[1]:
-                    tokens_to_win.append(a * 3 + b)
-
-        if len(tokens_to_win) > 0:
-            min_token = min(tokens_to_win)
-            return min_token
-        return 0
-
-                
-
+                    tokens = a * 3 + b
+        return tokens
 
 
 ###################################################################################
@@ -75,8 +73,8 @@ solution.parse_input(filename)
 
 start = perf_counter()
 part1 = solution.part_one()
-part2 = solution.part_two()
+#part2 = solution.part_two()
 end = perf_counter()
 print(f"Part 1 = {part1}")
-print(f"Part 2 = {part2}")
+#print(f"Part 2 = {part2}")
 print(f"Duration = {end - start}s")
