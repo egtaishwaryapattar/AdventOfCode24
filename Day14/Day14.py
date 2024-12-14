@@ -58,25 +58,14 @@ class Solution:
 
     def part_two(self, width, height, start_val):
         # hate vague requirements - attempt of a vague solution
-        # I assume that a xmas tree would be centred. So down the vertical centre there would be *a lot* of robots
-        vert_center = (width - 1) / 2
-
-        # initialise a grid
-        empty_grid = []
-        for i in range(height):
-            row = ''
-            for j in range(width):
-                row = row + ' '
-            empty_grid.append(row)
-
-        # for each second, check if there is a cluster down the center
-        for i in range(start_val, 100000):
-            on_vertical_center = []
+        # for each second, check for a vertical line where there are a lot consecutive robots together
+        for i in range(start_val, 10000):
+            robots_in_col = {} # key = col number, value = list of row numbers of the robots
 
             # find robot's positions at time i
             for robot in self.robots:
                 if i == start_val:
-                    # get the robots in the position we want them to start in
+                    # get the robots in the position we want them to start in - not assessing this position
                     x = ( robot.pos[0] + start_val * robot.velocity[0] ) % width
                     y = ( robot.pos[1] + start_val * robot.velocity[1] ) % height
                     robot.pos = (x,y)
@@ -87,41 +76,44 @@ class Solution:
                     y = ( robot.pos[1] + robot.velocity[1] ) % height
                     robot.pos = (x,y)
 
-                    if robot.pos[0] == vert_center:
-                        # just keep y value as we know the x value
-                        on_vertical_center.append(robot.pos[1])
+                    rows = robots_in_col.get(x)
+                    if rows is None:
+                        rows = [y]
+                    else:
+                        rows.append(y)
+                    robots_in_col[x] = rows
 
-            # at time i, assess whether there are enough points down the vertical centre and draw to see if it resembles a tree
-            # there are 500 guards, and the grid is 103 in height, so spanning a half of the height sound reasonable?
-            if len(on_vertical_center) > height / 2:
-                has_point = self.find_xmas_tree_point(on_vertical_center, vert_center, empty_grid.copy())
-                if has_point:
+            if len(robots_in_col) > 0:
+                if self.find_max_consecutive_robots_in_col(robots_in_col) > 20:
                     print(f"Num seconds = {i}")
                     break
-
+        
         return i
+    
+    
+    def find_max_consecutive_robots_in_col(self, robots_in_col):
+        max_consecutive_per_col = []
 
+        for col_num in robots_in_col:
+            # sort values in col in ascending order
+            values = robots_in_col.get(col_num)
+            values.sort()
 
-    def find_xmas_tree_point(self, robots_on_vert_center, grid):
-        # determine if the xmas tree has a point and no values robots above it or to the side of it
-        # minimum value on vertical centre line is a potential point
-        y = min(robots_on_vert_center)
+            num_consecutives = []
+            consecutive = 0
+            for i in range(1, len(values)):
+                if values[i] - values[i-1] == 1:
+                    consecutive += 1
+                else: 
+                    num_consecutives.append(consecutive)
+                    consecutive = 0 # reset the count
 
-        is_point = True
-        for robot in self.robots:
-            steps_across = robot.pos[0]
-            steps_down = robot.pos[1]
-
-            grid[steps_down][steps_across] = '*'
-
-            if steps_down <= y:
-                is_point = False
-                break
-
-        if is_point:
-            print(grid)
-
-        return is_point
+            if len(num_consecutives) > 0:
+                max_consecutive_per_col.append(max(num_consecutives))
+        
+        if len(max_consecutive_per_col) == 0:
+            return 0
+        return max(max_consecutive_per_col)
 
 
 ###################################################################################
